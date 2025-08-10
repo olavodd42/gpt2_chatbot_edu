@@ -8,11 +8,12 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from src.data_prep import load_dataset_hf, convert_dataset, concatenate_datasets_
+from src.templates import json_to_text
 
 # Carrega datasets do Hugging Face
-alpaca = load_dataset_hf("tatsu-lab/alpaca", sample_len=500)
-dolly = load_dataset_hf("databricks/databricks-dolly-15k", sample_len=500)
-sciq = load_dataset_hf("sciq", sample_len=500)  # sample
+alpaca = load_dataset_hf("tatsu-lab/alpaca", sample_len=10)
+dolly = load_dataset_hf("databricks/databricks-dolly-15k", sample_len=10)
+sciq = load_dataset_hf("sciq", sample_len=10)
 
 # Converte datasets no formato de chat
 alpaca = convert_dataset(alpaca, name="alpaca")
@@ -20,24 +21,11 @@ dolly = convert_dataset(dolly, name="dolly")
 sciq = convert_dataset(sciq, name="sciq")
 
 # Concatena datasets
-dataset = concatenate_datasets_([alpaca, dolly, sciq])
+splits = concatenate_datasets_([alpaca, dolly, sciq])
 
-# Exibir informações sobre o dataset
-print(f"Dataset total: {len(dataset)} exemplos")
-print(f"Colunas disponíveis: {dataset.column_names}")
-print("\n" + "="*50)
-print("PRIMEIROS 3 EXEMPLOS DO DATASET:")
-print("="*50)
+Path("../data/processed").mkdir(parents=True, exist_ok=True)
+splits["train"].to_json("../data/processed/train.jsonl", orient="records", lines=True, force_ascii=False)
+splits["val"].to_json("../data/processed/val.jsonl", orient="records", lines=True, force_ascii=False)
+splits["test"].to_json("../data/processed/test.jsonl", orient="records", lines=True, force_ascii=False)
 
-# Exibir os primeiros 3 exemplos
-for i in range(min(3, len(dataset))):
-    print(f"\n--- Exemplo {i+1} ---")
-    for column in dataset.column_names:
-        value = dataset[i][column]
-        if isinstance(value, str) and len(value) > 200:
-            # Truncar textos muito longos
-            print(f"{column}: {value[:200]}...")
-        else:
-            print(f"{column}: {value}")
-
-
+print(json_to_text("train.jsonl"))
