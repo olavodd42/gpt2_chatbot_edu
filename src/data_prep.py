@@ -110,3 +110,24 @@ def clean_dataset(dataset):
         "val": map_dataset(dataset["val"], clean_dialogue),
         "test": map_dataset(dataset["test"], clean_dialogue)
     }
+
+def save_text_jsonl(data, fname):
+    """
+    Salva em JSON Lines compatível com load_dataset("json").
+    Aceita tanto datasets.Dataset (HF) quanto pandas.DataFrame.
+    """
+    out_dir = Path("../data/processed")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / fname
+
+    # Dataset HF
+    if data.__class__.__name__ == "Dataset":
+        data.to_json(str(out_path), lines=True, force_ascii=False)
+        return str(out_path)
+
+    # Fallback: pandas DataFrame
+    if hasattr(data, "to_json"):
+        data.to_json(str(out_path), orient="records", lines=True, force_ascii=False)
+        return str(out_path)
+
+    raise TypeError("save_text_jsonl: objeto 'data' não é Dataset HF nem DataFrame.")

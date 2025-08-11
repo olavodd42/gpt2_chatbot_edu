@@ -17,3 +17,19 @@ def json_to_text(filename):
         parts.append(f"{USER}: {user_content.strip()}\n{ASSISTANT}: {assistant_content}")
 
     return "\n".join(parts) + f"\n{ASSISTANT}: "
+
+def dialogue_to_text(dialogue):
+    """
+    Converte uma lista de mensagens [{"role": "...", "content": "..."}]
+    para uma string única no formato GPT-2.
+    """
+    parts = []
+    for msg in dialogue:
+        if msg["role"].lower() == "user":
+            parts.append(f"<|user|> {msg['content']}")
+        elif msg["role"].lower() == "assistant":
+            parts.append(f"<|assistant|> {msg['content']}")
+        else:
+            parts.append(f"{msg['role']}: {msg['content']}")
+    # Fecha com token de fim de texto
+    return "\n".join(parts) + "<|endoftext|>"
