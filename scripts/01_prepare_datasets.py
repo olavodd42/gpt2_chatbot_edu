@@ -16,9 +16,9 @@ def as_text_dataset(ds):
     return ds.map(lambda ex: {"text": dialogue_to_text(ex["dialogue"])}, remove_columns=ds.column_names)
 
 # Carrega datasets do Hugging Face
-alpaca = load_dataset_hf("tatsu-lab/alpaca", sample_len=10)
-dolly = load_dataset_hf("databricks/databricks-dolly-15k", sample_len=10)
-sciq = load_dataset_hf("sciq", sample_len=10)
+alpaca = load_dataset_hf("tatsu-lab/alpaca")
+dolly = load_dataset_hf("databricks/databricks-dolly-15k")
+sciq = load_dataset_hf("sciq")
 
 # Converte datasets no formato de chat
 alpaca = convert_dataset(alpaca, name="alpaca")
