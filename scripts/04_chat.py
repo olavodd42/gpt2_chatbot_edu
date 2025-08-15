@@ -1,8 +1,7 @@
 import sys
 import torch
 from pathlib import Path
-from datasets import load_dataset
-from transformers import StoppingCriteria, StoppingCriteriaList
+from transformers import StoppingCriteriaList
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -22,7 +21,8 @@ assert_lora_attached(model)
 
 # garanta pad/eos alinhados
 eos_id = tokenizer.eos_token_id
-pad_id = tokenizer.eos_token_id
+pad_id = tokenizer.pad_token_id
+bad_words_ids = tokenizer(["<|user|>"], add_special_tokens=False).input_ids
 
 max_ctx = getattr(model.config, "n_positions", 1024) or 1024
 history = []
@@ -74,8 +74,7 @@ while True:
             # NÃO usar early_stopping aqui (gera aviso e é ignorado)
         ))
 
-    # impedir que o modelo volte a escrever o marcador de usuário
-    bad_words_ids = tokenizer(["<|user|>"], add_special_tokens=False).input_ids
+
     with torch.no_grad():
         out_ids = model.generate(
             **inputs,
