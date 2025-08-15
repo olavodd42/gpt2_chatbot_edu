@@ -209,6 +209,11 @@ def generate_batch(model, tokenizer, ds, n=5, **gen_kwargs):
     for i in range(n):
         inp_ids = torch.tensor(ds[i]["input_ids"], device=model.device).unsqueeze(0)
         attn    = torch.tensor(ds[i]["attention_mask"], device=model.device).unsqueeze(0)
+
+        prompt_len = inp_ids.shape[1]
+        stop_strings = ["<|endoftext|>", "\n<|user|>"]
+        stopping = StoppingCriteriaList([StopOnSubstrings(tokenizer, stop_strings, prompt_len)])
+
         out = model.generate(
             input_ids=inp_ids,
             attention_mask=attn,
@@ -220,15 +225,13 @@ def generate_batch(model, tokenizer, ds, n=5, **gen_kwargs):
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
             use_cache=True,
+            stopping_criteria=stopping,
             **gen_kwargs
         )
+
         prompt_text = tokenizer.decode(inp_ids[0], skip_special_tokens=False)
-        full_text   = tokenizer.decode(out[0],     skip_special_tokens=False)
-        gen_only = full_text[len(prompt_text):]
-        for stop in ("<|endoftext|>", "\n<|user|>"):
-            if stop in gen_only:
-                gen_only = gen_only.split(stop, 1)[0]
-        gen_only = gen_only.replace("<|assistant|>", "").strip()
+        gen_only = _postprocess_response(tokenizer, inp_ids[0], out[0])
+
         print("\nPROMPT:\n", prompt_text)
         print("\nOUTPUT:\n", gen_only)
 
