@@ -2,20 +2,20 @@ project_name: chatbot-edu-gpt2
 seed: 42
 
 data:
-  train_path: data/processed/train.jsonl
-  val_path:   data/processed/val.jsonl
+  train_path: ../data/processed/train.jsonl
+  val_path:   ../data/processed/val.jsonl
   block_size: 512
 
 model:
   base_ckpt: gpt2
   add_special_tokens: ["<|user|>", "<|assistant|>"]
-  load_in_8bit: true
+  load_in_8bit: True
   device_map: "auto"
-  gradient_checkpointing: true
-  cache: false
+  gradient_checkpointing: True
+  cache: False
 
 lora:
-  enabled: true
+  enabled: True
   r: 16
   alpha: 32
   dropout: 0.05
@@ -31,11 +31,15 @@ train:
   grad_accum_steps: 16
   eval_steps: 500
   save_steps: 500
-  fp16: true
+  dataloader_num_workers: 2
+  warmup_ratio: 0.3
+  fp16: True
+  group_by_length: True
 
 logging:
   report_to: "none"
-  output_dir: experiments/runs
+  output_dir: ../experiments/runs
+  logging_steps: 5
 
 infer:
   max_new_tokens: 128

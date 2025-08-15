@@ -33,3 +33,9 @@ def dialogue_to_text(dialogue):
             parts.append(f"{msg['role']}: {msg['content']}")
     # Fecha com token de fim de texto
     return "\n".join(parts) + "<|endoftext|>"
+
+def as_text(ds):
+    return ds.map(
+        lambda ex: {"text": dialogue_to_text(ex["dialogue"])},
+        remove_columns=[c for c in ds.column_names if c not in {"dialogue", "source"}]
+    ).filter(lambda ex: len(ex["text"].strip()) > 0)
