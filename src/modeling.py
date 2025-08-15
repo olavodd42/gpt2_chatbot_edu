@@ -99,24 +99,43 @@ def create_data_collator(tokenizer):
 
 
 # -------- tokenização do dataset de texto --------
-def tokenize_dataset(tokenizer, dataset, block_size: int = 512):
-    # 1) aparas/linhas vazias
+def tokenize_dataset(tokenizer, dataset, block_size=512):
+    """
+    Aceita DatasetDict com 'text' OU 'dialogue'.
+    - Se houver 'dialogue', converte para 'text' via template.
+    - Remove colunas extras e retorna somente {input_ids, attention_mask}.
+    """
+    from src.templates import dialogue_to_text  # já usado por você
+
+    # 0) Se vier com 'dialogue', converta para 'text' e remova 'dialogue'
+    if "train" in dataset and "dialogue" in dataset["train"].column_names:
+        dataset = dataset.map(
+            lambda ex: {"text": dialogue_to_text(ex["dialogue"])},
+            remove_columns=["dialogue"]
+        )
+
+    # 1) strip + filtrar vazios
     def strip_fn(ex):
         txt = ex.get("text") or ""
         return {"text": txt.strip()}
     dataset = dataset.map(strip_fn)
-    dataset = dataset.filter(lambda ex: len(ex["text"]) > 0)
+    dataset = dataset.filter(lambda ex: isinstance(ex["text"], str) and len(ex["text"]) > 0)
 
-    # 2) tokeniza em lote
+    # 2) tokenizar em lote
     def tok_batch(batch):
         return tokenizer(
             batch["text"],
             truncation=True,
             max_length=block_size,
             return_attention_mask=True,
+            # padding é feito pelo collator; se quiser, pode pôr padding=False aqui
         )
-    tokenized = dataset.map(tok_batch, batched=True, remove_columns=["text"])
 
-    # 3) filtro defensivo
+    # remova TODAS as colunas atuais (inclui 'text' e quaisquer sobras)
+    cols_to_drop = dataset["train"].column_names
+    tokenized = dataset.map(tok_batch, batched=True, remove_columns=cols_to_drop)
+
+    # 3) sanidade: remover exemplos vazios
     tokenized = tokenized.filter(lambda ex: len(ex["input_ids"]) > 0)
+
     return tokenized

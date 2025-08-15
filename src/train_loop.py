@@ -126,7 +126,9 @@ def evaluate(trainer):
 
 def save_model_tokenizer(trainer, tokenizer):
     # Salva adapters (como o Trainer já está sobre PeftModel, isso grava os pesos do adapter)
-    out = "../experiments/checkpoints/adapter"
+    #out = "..//experiments/checkpoints/adapter"
+    out = Path("../experiments") / f"{project_name}" / f"seed{seed}"
+    out.mkdir(parents=True, exist_ok=True)
     trainer.save_model(out)
     tokenizer.save_pretrained(out)
 

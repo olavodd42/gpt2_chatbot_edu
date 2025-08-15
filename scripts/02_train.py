@@ -55,6 +55,9 @@ ex = tokenized_dataset["train"][0]
 print("Keys:", ex.keys())
 print("input_ids len:", len(ex["input_ids"]), "| attn len:", len(ex["attention_mask"]))
 
+print(tokenized_dataset)
+print(tokenized_dataset["train"].column_names)  # deve ser ['input_ids', 'attention_mask']
+print(tokenized_dataset["val"].column_names)
 
 # --- 3) Criar e avaliar trainer modelo base ---
 base_trainer = create_trainer(model, tokenized_dataset, tokenizer=tokenizer)
@@ -63,8 +66,7 @@ base_ppl = math.exp(base_metrics["eval_loss"]) if "eval_loss" in base_metrics el
 print(f"[BASE] eval_loss={base_metrics.get('eval_loss'):.4f} | ppl={base_ppl:.2f}")
 
 # --- 4) Treinar ---
-trainer = train(model, dataset, tokenizer=tokenizer)
-
+trainer = train(model, tokenized_dataset, tokenizer=tokenizer)
 
 # --- 5) Avaliar ---
 final_metrics = evaluate(trainer)

@@ -1,0 +1,40 @@
+{
+  "os": "Linux-6.14.0-27-generic-x86_64-with-glibc2.39",
+  "python": "CPython 3.10.18",
+  "startedAt": "2025-08-15T01:50:11.808429Z",
+  "program": "/mnt/dados/gpt2_chatbot/scripts/02_train.py",
+  "codePath": "scripts/02_train.py",
+  "codePathLocal": "02_train.py",
+  "git": {
+    "remote": "https://github.com/olavodd42/gpt2_chatbot.git",
+    "commit": "08938134802d5cbd776dd3f33b0612b0206a0266"
+  },
+  "email": "olavo.dalberto@acad.ufsm.br",
+  "root": "/mnt/dados/gpt2_chatbot/scripts",
+  "host": "olavo-dalberto-Dell-G15-5515",
+  "executable": "/mnt/dados/gpt2_chatbot/.venv/bin/python",
+  "cpu_count": 6,
+  "cpu_count_logical": 12,
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "46111125504",
+      "used": "34163163136"
+    }
+  },
+  "memory": {
+    "total": "16080228352"
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "memoryTotal": "4294967296",
+      "cudaCores": 2048,
+      "architecture": "Ampere",
+      "uuid": "GPU-95838dcd-7007-0b30-33c0-f762e0e9f09f"
+    }
+  ],
+  "cudaVersion": "12.9",
+  "writerId": "yu22yhd5ldblq8snnpbkqq6rxy4j20ol"
+}
