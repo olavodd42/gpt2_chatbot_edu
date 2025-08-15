@@ -127,7 +127,8 @@ def _postprocess_response(tokenizer, prompt_ids, full_ids):
 @torch.no_grad()
 def chat(
     model, tokenizer, user_text: str,
-    max_new_tokens=48, temperature=0.5, top_p=0.9,
+    # aumenta o limite padrão para evitar cortes abruptos em respostas longas
+    max_new_tokens=128, temperature=0.5, top_p=0.9,
     repetition_penalty=1.12, do_sample=True, **gen_kwargs
 ):
     # limpar duplicatas

@@ -78,7 +78,8 @@ while True:
     with torch.no_grad():
         out_ids = model.generate(
             **inputs,
-            max_new_tokens=64,                # menor → menos “rabo”
+            # aumenta o limite para evitar cortes abruptos em respostas longas
+            max_new_tokens=128,
             repetition_penalty=1.15,
             no_repeat_ngram_size=3,
             bad_words_ids=bad_words_ids,
