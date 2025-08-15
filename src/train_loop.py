@@ -31,6 +31,20 @@ if logging_args.get("report_to", "none") == "wandb":
 
 
 def create_trainer(model, dataset, tokenizer):
+    """
+    Configura o `Trainer` do Hugging Face com parâmetros do projeto.
+
+    Parâmetros:
+        model: Modelo a ser treinado.
+        dataset (dict): Datasets com chaves ``train`` e ``val``.
+        tokenizer: Tokenizer usado para preparar os lotes.
+
+    Retorna:
+        Trainer: Instância pronta para o treinamento.
+
+    Efeitos colaterais:
+        Cria diretório de saída em ``../experiments``.
+    """
     out_dir = Path("../experiments") / f"{project_name}" / f"seed{seed}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -113,7 +127,20 @@ def create_trainer(model, dataset, tokenizer):
     )
 
 def train(model, dataset, tokenizer):
+    """
+    Executa o ciclo de treinamento completo.
 
+    Parâmetros:
+        model: Modelo base a ser treinado.
+        dataset (dict): Datasets contendo splits de treino e validação.
+        tokenizer: Tokenizer associado ao modelo.
+
+    Retorna:
+        Trainer: ``Trainer`` após o término do treinamento.
+
+    Efeitos colaterais:
+        Atualiza configurações do W&B e salva o estado do ``Trainer``.
+    """
     if logging_args.get("report_to", "none") == "wandb":
         wandb.config.update(params, allow_val_change=True)
     trainer = create_trainer(model, dataset, tokenizer)
@@ -121,10 +148,34 @@ def train(model, dataset, tokenizer):
     trainer.save_state()
     return trainer
 
+
 def evaluate(trainer):
+    """
+    Avalia o modelo no conjunto de validação.
+
+    Parâmetros:
+        trainer (Trainer): Instância já treinada.
+
+    Retorna:
+        dict: Métricas de avaliação.
+    """
     return trainer.evaluate()
 
+
 def save_model_tokenizer(trainer, tokenizer):
+    """
+    Salva o modelo ajustado e o tokenizer no diretório de experimentos.
+
+    Parâmetros:
+        trainer (Trainer): Objeto contendo o modelo treinado.
+        tokenizer: Tokenizer a ser persistido.
+
+    Retorna:
+        None
+
+    Efeitos colaterais:
+        Cria diretório e grava arquivos de modelo e tokenizer.
+    """
     # Salva adapters (como o Trainer já está sobre PeftModel, isso grava os pesos do adapter)
     #out = "..//experiments/checkpoints/adapter"
     out = Path("../experiments") / f"{project_name}" / f"seed{seed}"
