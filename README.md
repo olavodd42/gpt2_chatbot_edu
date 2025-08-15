@@ -19,12 +19,14 @@ Licença: ver [LICENSE.md](LICENSE.md)
 - [📂 Estrutura do Projeto](#-estrutura-do-projeto)
 - [⚙️ Funcionalidades](#️-funcionalidades)
 - [📦 Instalação](#-instalação)
+- [🛠️ Requisitos](#️-requisitos)
+- [📥 Preparação de Dados](#-preparação-de-dados)
+- [🏋️ Treinamento](#-treinamento)
+- [🤖 Inferência](#-inferência)
 - [📊 Estrutura de Configuração](#-estrutura-de-configuração-train_smallyaml)
-- [🚀 Fluxo de Execução](#-fluxo-de-execução)
 - [🧪 Estrutura de Tokenização](#-estrutura-de-tokenização)
 - [📈 Integração com Weights & Biases](#-integração-com-weights--biases)
 - [📜 Exemplo de Dataset no Formato Final](#-exemplo-de-dataset-no-formato-final)
-- [🛠️ Requisitos](#️-requisitos)
 - [📚 Possíveis Extensões para Artigo](#-possíveis-extensões-para-artigo)
 - [📊 Metodologia e Resultados](#-metodologia-e-resultados)
 - [📄 Citar este trabalho](#-citar-este-trabalho)
@@ -81,6 +83,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## 🛠️ Requisitos
+- Python 3.10+
+- torch >=2.0.0
+- transformers >=4.40.0
+- datasets >=2.19.0
+- peft >=0.10.0
+- bitsandbytes >=0.43.0
+- accelerate >=0.30.0
+- wandb >=0.17.0
+- beautifulsoup4 >=4.12.0
+- PyYAML >=6.0
+
 ## 📊 Estrutura de Configuração (train_small.yaml)
 *(Veja exemplo completo no repositório)*
 
@@ -97,19 +111,26 @@ logging:
   report_to: "wandb"
 ```
 
-## 🚀 Fluxo de Execução
-1. **Preparar dataset**
+## 📥 Preparação de Dados
+Script principal: [`scripts/01_prepare_datasets.py`](scripts/01_prepare_datasets.py)
 ```bash
 python scripts/01_prepare_datasets.py
 ```
-2. **Treinar modelo**
+Gera arquivos `train.jsonl`, `val.jsonl` e `test.jsonl` no diretório atual e exibe a distribuição de amostras por fonte.
+
+## 🏋️ Treinamento
+Script principal: [`scripts/02_train.py`](scripts/02_train.py)
 ```bash
 python scripts/02_train.py
 ```
-3. **Rodar inferência**
+Carrega as configurações de `configs/train_small.yaml`, tokeniza os dados, avalia o modelo base e realiza o fine-tuning com LoRA+8-bit. Ao final, imprime métricas como `eval_loss` e `ppl` e salva pesos e tokenizer em `experiments/`.
+
+## 🤖 Inferência
+Script principal: [`scripts/03_inference.py`](scripts/03_inference.py)
 ```bash
 python scripts/03_inference.py
 ```
+Compara respostas do modelo base e do modelo ajustado para uma pergunta de exemplo e gera saídas para o conjunto de teste.
 
 ## 🧪 Estrutura de Tokenização
 ```python
@@ -139,14 +160,6 @@ Formato texto:
 <|user|> What is the capital of France?
 <|assistant|> Paris.
 ```
-
-## 🛠️ Requisitos
-- Python 3.10+
-- transformers
-- datasets
-- peft
-- bitsandbytes
-- wandb
 
 ## 📚 Possíveis Extensões para Artigo
 - Comparar LoRA vs Full Fine-tuning
