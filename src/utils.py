@@ -9,7 +9,7 @@ def load_params(filename):
 
         return config_params
     except FileNotFoundError:
-        print("Error: config.yaml not found.")
+        print(f"Error: {filename} not found.")
     except yaml.YAMLError as e:
         print(f"Error parsing YAML file: {e}")
 
