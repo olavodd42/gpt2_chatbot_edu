@@ -98,7 +98,7 @@ def extract_answer_from_annotations(annotations: dict) -> str:
     sa = annotations.get("short_answers")
     if isinstance(sa, list) and len(sa) > 0:
         sa0 = sa[0]
-        # 'text' pode ser str, lista de str, lista de lista...
+        # 'text' pode ser str, lista de str, lista de listas...
         txt = sa0.get("text")
         txt = _as_str(txt)        # desempacota iterativamente
         if isinstance(txt, str) and txt.strip():
