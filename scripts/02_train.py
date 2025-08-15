@@ -12,7 +12,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 from src.modeling import load_model, create_data_collator, tokenize_dataset
 from src.train_loop import create_trainer, train, evaluate, save_model_tokenizer, log_samples_wandb
-from src.chat_loop import format_prompt
+from src.inference_loop import format_prompt
 
 # --- 1) Carregar configs ---
 with open("../configs/train_small.yaml", "r") as f:
